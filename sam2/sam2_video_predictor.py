@@ -48,6 +48,7 @@ class SAM2VideoPredictor(SAM2Base):
         offload_state_to_cpu=False,
         async_loading_frames=False,
     ):
+
         """Initialize an inference state."""
         compute_device = self.device  # device of the model
         images, video_height, video_width = load_video_frames(

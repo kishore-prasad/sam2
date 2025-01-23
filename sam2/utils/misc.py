@@ -193,6 +193,7 @@ def load_video_frames(
             img_mean=img_mean,
             img_std=img_std,
             compute_device=compute_device,
+
         )
     elif is_str and os.path.isdir(video_path):
         return load_video_frames_from_jpg_images(
@@ -240,12 +241,39 @@ def load_video_frames_from_jpg_images(
             "ffmpeg to start the JPEG file from 00000.jpg."
         )
 
-    frame_names = [
-        p
-        for p in os.listdir(jpg_folder)
-        if os.path.splitext(p)[-1] in [".jpg", ".jpeg", ".JPG", ".JPEG"]
-    ]
-    frame_names.sort(key=lambda p: int(os.path.splitext(p)[0]))
+
+    def sort_by_image_number(filenames):
+        """ Sort the 360 deg image based on its index 
+        Args:
+            filenames(list):
+                list of 360 deg images 
+        """
+        def get_image_number(filename):
+            base = os.path.basename(filename)
+            print( " BASE NAME : ", base)
+
+            number_part = base.split('_')[-1]
+            print(" NUMBER PART : ", number_part)
+            number = int(number_part.split('.')[0])
+            return number
+        return sorted(filenames, key=get_image_number)
+
+
+
+    # frame_names = [
+    #     p
+    #     for p in os.listdir(jpg_folder)
+    #     if os.path.splitext(p)[-1] in [".jpg", ".jpeg", ".JPG", ".JPEG"]
+    # ]
+    # frame_names.sort(key=lambda p: int(os.path.splitext(p)[0]))
+    
+
+    print(" JPG_FOLDER : ", jpg_folder)
+    
+    frame_names = sort_by_image_number([
+            p for p in os.listdir(jpg_folder) if os.path.splitext(p)[-1].lower() in [".jpg", ".jpeg"]
+        ])
+
     num_frames = len(frame_names)
     if num_frames == 0:
         raise RuntimeError(f"no images found in {jpg_folder}")
